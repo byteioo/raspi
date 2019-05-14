@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Raspi</title>
+    <link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/mdui/0.4.2/css/mdui.min.css">
+    <script src="https://cdnjs.loli.net/ajax/libs/mdui/0.4.2/js/mdui.min.js"></script>
+</head>
+<body class="mdui-appbar-with-toolbar mdui-drawer-body-left">
+    <div class="mdui-appbar mdui-appbar-fixed">
+
+    </div>
+    <!-- 默认抽屉栏在左侧 -->
+  <div class="mdui-drawer mdui-shadow-3">
+      <ul class="mdui-list left-ul ">
+
+      </ul>
+  </div>
+    <div class="mdui-container">
+        <div class="picamera ">
+            <canvas id="video-canvas" class="mdui-video-fluid mdui-m-y-1 mdui-center"  width= {{WIDTH}} height={{HEIGHT}}></canvas>
+            <div class="mdui-row ">
+                <div class="mdui-center" style="width: 300px">
+                    <button id="btn_cam_up" class="mdui-btn mdui-color-pink-500 mdui-ripple mdui-m-t-1">向上</button>
+                    <button id="btn_cam_down" class="mdui-btn mdui-color-pink-500 mdui-ripple mdui-m-t-1">向下</button>
+                    <button id="btn_cam_reset" class="mdui-btn mdui-color-pink-500 mdui-ripple mdui-m-t-1">恢复</button>
+                </div>
+            </div>
+            <div class="mdui-row">
+                <div class="mdui-center" style="width: 200px">
+                    <button id="btn_cam_left" class="mdui-btn mdui-color-pink-500 mdui-ripple mdui-m-t-1">左转</button>
+                    <button id="btn_cam_right" class="mdui-btn mdui-color-pink-500 mdui-ripple mdui-m-t-1">右转</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/jsmpeg/0.2/jsmpg.min.js"></script>
+    <script src="/static/js/index.js"></script>
+    <script src="/static/js/http.js"></script>
+    <script>
+
+	    var canvas = document.getElementById('video-canvas');
+	    canvas.getContext('2d').fillText('正在加载...', canvas.width/2-30, canvas.height/3);
+	    var client = new WebSocket('{{WS_URL}}?{{ WS_TOKEN }}');<!-- 问号后面为web_socket的token需要与start_cam.py中一致 -->
+        var player = new jsmpeg(client ,{canvas:canvas});
+
+	    <!--获取当前URL-->
+	    var url="http://" + window.location.host
+        $("#btn_cam_up").click(function () {
+            ajax_get(url+"/cam/api/up/",null);
+        });
+        $("#btn_cam_down").click(function () {
+            ajax_get(url+"/cam/api/down/",null);
+        });
+        $("#btn_cam_left").click(function () {
+            ajax_get(url+"/cam/api/left/",null);
+        });
+        $("#btn_cam_right").click(function () {
+            ajax_get(url+"/cam/api/right/",null);
+        });
+        $("#btn_cam_reset").click(function () {
+            ajax_get(url+"/cam/api/reset/",null);
+        });
+    </script>
+</body>
+</html>

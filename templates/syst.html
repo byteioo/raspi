@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Raspi</title>
+    <link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/mdui/0.4.2/css/mdui.min.css">
+    <script src="https://cdnjs.loli.net/ajax/libs/mdui/0.4.2/js/mdui.min.js"></script>
+</head>
+<body class="mdui-appbar-with-toolbar mdui-drawer-body-left">
+    <div class="mdui-appbar mdui-appbar-fixed">
+
+    </div>
+    <!-- 默认抽屉栏在左侧 -->
+  <div class="mdui-drawer mdui-shadow-3">
+      <ul class="mdui-list left-ul ">
+
+      </ul>
+  </div>
+    <div class="mdui-container">
+        <div class="mdui-m-t-2">
+            <div id="sys_cpu_canvers" class="mdui-col-md-5 mdui-shadow-2 mdui-m-y-1 mdui-m-l-1" style="height: 350px;"></div>
+            <div id="sys_ram_canvers" class="mdui-col-md-5 mdui-shadow-2 mdui-m-y-1 mdui-m-l-1" style="height: 350px;"></div>
+            <div id="sys_disk_canvers" class="mdui-col-md-5 mdui-shadow-2 mdui-m-y-1 mdui-m-l-1" style="height: 350px;"></div>
+        </div>
+    </div>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/echarts/4.2.1-rc1/echarts.min.js"></script>
+    <script src="/static/js/http.js"></script>
+    <script src="/static/js/index.js"></script>
+    <script>
+        //生成树莓派系统信息图表的js
+        var sys_disk_canvers = echarts.init($("#sys_disk_canvers").get(0));
+        var sys_ram_canvers = echarts.init($("#sys_ram_canvers").get(0));
+        var sys_cpu_canvers = echarts.init($("#sys_cpu_canvers").get(0));
+	function disk_info() {
+        // 指定图表的配置项和数据
+        var disk_option = {
+                title: {
+                        text: 'DISK'
+                },
+                tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                                type: 'shadow'
+                        }
+                },
+                //提示框组件
+                legend: { //图例组件
+                        data: [""] //图例的数据数组。数组项通常为一个字符串，每一项代表一个系列的 name
+                },
+                xAxis: { //直角坐标系 grid 中的 x 轴
+                        data: ['总量( G )', "已使用( G )", "占比( % )"]
+                },
+                yAxis: {},
+                series: [{ //系列列表
+                        name: '',
+                        //系列名称，用于tooltip的显示，legend 的图例筛选
+                        color: ["#FF80AB"],
+                        type: 'bar',
+                        //类型
+                        barWidth: 80,
+                        itemStyle: {
+                                normal: {
+                                        label: {
+                                                show: true,
+                                                position: 'insideTop'
+                                        }
+                                }
+
+                        },
+                        data: ["{{disk_total}}", "{{disk_used}}", "{{disk_used_percentage}}"] //系列中的数据内容数组。数组项通常为具体的数据项
+                }]
+        };
+        sys_disk_canvers.setOption(disk_option);
+	}
+
+	function ram_info() {
+        var ram_option = {
+                title: {
+                        text: 'RAM'
+                },
+                tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                                type: 'shadow'
+                        }
+                },
+                //提示框组件
+                legend: { //图例组件
+                        data: [""] //图例的数据数组。数组项通常为一个字符串，每一项代表一个系列的 name
+                },
+                xAxis: { //直角坐标系 grid 中的 x 轴
+                        data: ['总量( M )', "已使用( M )", "剩余( M )"]
+                },
+                yAxis: {},
+                series: [{ //系列列表
+                        name: '',
+                        //系列名称，用于tooltip的显示，legend 的图例筛选
+                        color: ["#80DEEA"],
+                        type: 'bar',
+                        //类型
+                        barWidth: 80,
+                        itemStyle: {
+                                normal: {
+                                        label: {
+                                                show: true,
+                                                position: 'insideTop'
+                                        }
+                                }
+
+                        },
+                        data: ["{{ram_total}}", "{{ram_used}}", "{{ram_free}}"] //系列中的数据内容数组。数组项通常为具体的数据项
+                }]
+        };
+        sys_ram_canvers.setOption(ram_option);
+	}
+
+	function cpu_info() {
+        // 指定图表的配置项和数据
+        var cpu_option = {
+                title: {
+                        text: 'CPU'
+                },
+                tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                                type: 'shadow'
+                        }
+                },
+                legend: {
+                        data: [""]
+                },
+                xAxis: {
+                        data: ['已使用( % )', "温度( ℃ )"]
+                },
+                yAxis: {},
+                series: [{
+                        name: '',
+                        color: ["#81D4FA"],
+                        type: 'bar',
+                        barWidth: 80,
+                        itemStyle: {
+                                normal: {
+                                        label: {
+                                                show: true,
+                                                position: 'insideTop'
+                                        }
+                                }
+
+                        },
+                        data: ["{{cpu_used}}", "{{cpu_temperature}}"]
+                }]
+        };
+        sys_cpu_canvers.setOption(cpu_option);
+	}
+
+	function init_pi_info() {
+        cpu_info();
+        ram_info();
+        disk_info();
+	}
+	window.onresize = function() {
+	    sys_disk_canvers.resize();
+	    sys_ram_canvers.resize();
+	    sys_cpu_canvers.resize();
+	}
+	init_pi_info()
+    </script>
+
+</body>
+</html>
